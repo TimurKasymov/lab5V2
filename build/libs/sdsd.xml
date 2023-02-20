@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<products>
+    <product>
+        <id>1</id>
+        <name>ddfd</name>
+        <coordinates>
+            <x>44.0</x>
+            <y>45.0</y>
+        </coordinates>
+        <creationDate>2023-02-18T23:08:57.9540857</creationDate>
+        <price>45.0</price>
+        <manufactureCost>4.0</manufactureCost>
+        <unitOfMeasure>LITERS</unitOfMeasure>
+    </product>
+</products>

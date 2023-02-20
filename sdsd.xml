@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<products>
+    <product>
+        <id>2</id>
+        <name>fdsfs</name>
+        <coordinates>
+            <x>323.0</x>
+            <y>232.0</y>
+        </coordinates>
+        <creationDate>2023-02-20T12:02:06.0632164</creationDate>
+        <price>23.0</price>
+        <manufactureCost>23.0</manufactureCost>
+        <unitOfMeasure>LITERS</unitOfMeasure>
+    </product>
+</products>
