@@ -15,6 +15,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class CollectionManager implements CollectionCustom<Product> {
 
@@ -28,13 +29,19 @@ public class CollectionManager implements CollectionCustom<Product> {
         this.fileManager = fileManager;
         this.messageHandler = messageHandler;
         try{
-            products = fileManager.load();
-            products = products == null ? new LinkedList<Product>() : products;
+            fileManager.load();
+            products = fileManager.get();
+            if(validateData())
+                products = products == null ? new LinkedList<Product>() : products;
+            else {
+                products = new LinkedList<Product>();
+                messageHandler.displayToUser("the products in the specified file do not meet the validation criteria, loaded collection is cleared");
+            }
             boolean up = true, down = true;
             for (var i = 1; i < products.size(); i++) {
-                if(products.get(i-1).getId() < products.get(i).getId())
+                if(products.get(i-1).compareTo(products.get(i)) > 0)
                     down = false;
-                else if(products.get(i-1).getId() > products.get(i).getId())
+                else if(products.get(i-1).compareTo(products.get(i)) < 0)
                     up = false;
                 if(!(down || up))
                     break;
@@ -74,10 +81,15 @@ public class CollectionManager implements CollectionCustom<Product> {
 
             productIds.add(prod.getId());
         }
-        var minProductId = productIds.stream().reduce(Long.MAX_VALUE, (m,i)-> {if (i< m){m = i;} return m; });
+        var ids = productIds.toArray();
+        var minId = Long.MAX_VALUE;
+        for (Object id : ids) {
+            if ((Long) id < minId)
+                minId = (Long) id;
+        }
         var minOrganizationId = organizationIds.stream().reduce(Long.MAX_VALUE, (m,i)-> {if (i< m){m = i;} return m; });
 
-        if(productIds.stream().count() < products.size() || minProductId < 1
+        if(ids.length < products.size() || minId < 1
                 || minOrganizationId < 1 || organizationIds.stream().count() < organizationIds.size()){
             return false;
         }
@@ -108,7 +120,7 @@ public class CollectionManager implements CollectionCustom<Product> {
                 return;
             }
             fileManager.save(products);
-            messageHandler.displayToUser("collections succesfully saved");
+            messageHandler.displayToUser("collections successfully saved");
         }
         catch (Exception exception){
             messageHandler.log(exception.getMessage());

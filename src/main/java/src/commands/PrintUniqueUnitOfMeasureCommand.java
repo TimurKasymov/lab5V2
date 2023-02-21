@@ -2,27 +2,29 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
 import java.util.HashSet;
 
-public class PrintUniqueUnitOfMeasureCommand implements Command {
-    private CollectionCustom<Product> collectionCustom;
-    public PrintUniqueUnitOfMeasureCommand(CollectionCustom<Product> collectionCustom){
-        this.collectionCustom = collectionCustom;
+public class PrintUniqueUnitOfMeasureCommand extends CommandBase implements Command {
+    public PrintUniqueUnitOfMeasureCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
+        var commandMessageHandler = commandManager.getMessageHandler();
+        var products = commandManager.getCollectionManager().get();
         var set = new HashSet<UnitOfMeasure>();
-        for(var prod : collectionCustom.get()){
+        for(var prod : products){
             if(prod.getUnitOfMeasure() != null)
                 set.add(prod.getUnitOfMeasure());
         }
         for (var unit: set
         ) {
-            System.out.println(unit);
+            commandMessageHandler.displayToUser(unit.toString());
         }
         return true;
     }

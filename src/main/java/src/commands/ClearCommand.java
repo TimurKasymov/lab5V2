@@ -2,19 +2,19 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
-public class ClearCommand implements Command {
-    private CollectionCustom<Product> productCollection;
+public class ClearCommand extends CommandBase implements Command {
 
-    public ClearCommand(CollectionCustom<Product> productCollection){
-        this.productCollection = productCollection;
+    public ClearCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
-        productCollection.get().clear();
+        commandManager.getCollectionManager().get().clear();
         return true;
     }
 

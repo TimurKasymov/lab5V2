@@ -4,7 +4,6 @@ import src.exceptions.FileLoadingException;
 import src.interfaces.Loadable;
 import src.models.Product;
 import src.models.Products;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -48,13 +47,15 @@ public class FileHandler implements Loadable {
     }
 
     @Override
-    public LinkedList<Product> load() throws Exception {
+    public void load() throws Exception {
         Scanner scanner = new Scanner(System.in);
         try {
             for ( ; ; ) {
+                String pathToFile = "";
                 Map<String, String> env = System.getenv();
-                var pathToFile = env.get("pathToXMLCollection");
-                if(pathToFile == null){
+                if(env != null && env.get("pathToXMLCollection") != null)
+                    pathToFile = env.get("pathToXMLCollection");
+                else {
                     System.out.print("Enter a full path to XML file with collection or of the file where collection elements are " +
                             "going to be stored to while being saved: ");
                     pathToFile = scanner.nextLine();
@@ -63,14 +64,14 @@ public class FileHandler implements Loadable {
                 if (!checkPermissions(pathToFile)){
                     System.out.println("You dont have access to the specified file. Try again.");
                     load();
-                    return null;
                 }
                 try {
                     initializationDate = ZonedDateTime.now();
                     xmlfile = new File(pathToFile);
                     if(!xmlfile.exists()){
                         System.out.println("0 products were downloaded");
-                        return null;
+                        products = new LinkedList<>();
+                        return;
                     }
                     final QName qName = new QName("product");
                     // create xml event reader for input stream
@@ -93,7 +94,6 @@ public class FileHandler implements Loadable {
         } catch (NoSuchElementException noSuchElementException) {
             System.exit(0);
         }
-        return products;
     }
 
     /** Method for saving (marshaling) java collection to XML-file and updating hash of file */
@@ -110,6 +110,7 @@ public class FileHandler implements Loadable {
             jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             //Marshal the persons list in file
             jaxbMarshaller.marshal(productsXml, fileWriter);
+            fileWriter.close();
             return true;
         } catch (JAXBException | IOException jaxbException) {
             throw new FileLoadingException(jaxbException.getMessage());
@@ -119,5 +120,10 @@ public class FileHandler implements Loadable {
     @Override
     public ZonedDateTime getInitializationTime() {
         return initializationDate;
+    }
+
+    @Override
+    public LinkedList<Product> get() {
+        return products;
     }
 }

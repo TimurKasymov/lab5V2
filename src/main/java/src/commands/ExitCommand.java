@@ -2,25 +2,27 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
 import java.util.concurrent.TimeUnit;
 
-public class ExitCommand implements Command {
-    private CollectionCustom<Product> collectionCustom;
-    public ExitCommand(CollectionCustom<Product> collectionCustom){
-        this.collectionCustom = collectionCustom;
+public class ExitCommand extends CommandBase implements Command {
+    public ExitCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
+        var commandMessageHandler = commandManager.getMessageHandler();
+
         try {
-            System.out.println("Program will be finished now. ");
+            commandMessageHandler.displayToUser("Program will be finished now. ");
             TimeUnit.SECONDS.sleep(3);
             System.exit(0);
         } catch (InterruptedException interruptedException) {
-            System.out.println("Program will be finished now.");
+            commandMessageHandler.displayToUser("Program will be finished now.");
             System.exit(0);
         }
         return true;

@@ -2,20 +2,20 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
-public class SaveCommand implements Command {
+public class SaveCommand extends CommandBase implements Command {
 
-    private final CollectionCustom<Product> productCollection;
 
-    public SaveCommand(CollectionCustom<Product> productCollection){
-        this.productCollection = productCollection;
+    public SaveCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
-        productCollection.save();
+        commandManager.getCollectionManager().save();
         return true;
     }
 

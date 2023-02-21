@@ -2,24 +2,26 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
-public class RemoveCommand implements Command {
-    private CollectionCustom<Product> productCollection;
+public class RemoveCommand extends CommandBase implements Command {
 
-    public RemoveCommand(CollectionCustom<Product> productCollection){
-        this.productCollection = productCollection;
+    public RemoveCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
     @Override
     public boolean execute(String[] args) {
+        var commandMessageHandler = commandManager.getMessageHandler();
+
         try {
             var id = Long.parseLong(args[0]);
-            productCollection.get().remove(id);
+            commandManager.getCollectionManager().get().remove(id);
             return true;
         }
         catch (NumberFormatException exception){
-                System.out.println("ID must be an number. Try typing this command again");
+            commandMessageHandler.displayToUser("ID must be an number. Try typing this command again");
                 return false;
         }
     }

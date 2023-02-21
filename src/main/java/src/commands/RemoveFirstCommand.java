@@ -2,21 +2,21 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
 import java.util.LinkedList;
 
-public class RemoveFirstCommand implements Command {
-    private CollectionCustom<Product> productCollection;
+public class RemoveFirstCommand extends CommandBase implements Command {
 
-    public RemoveFirstCommand(CollectionCustom<Product> productCollection){
-        this.productCollection = productCollection;
+    public RemoveFirstCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
-        ((LinkedList<Product>)(productCollection.get())).removeFirst();
+        ((LinkedList<Product>)(commandManager.getCollectionManager().get())).removeFirst();
         return true;
     }
 

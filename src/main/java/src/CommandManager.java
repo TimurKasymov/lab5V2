@@ -1,59 +1,56 @@
 package src;
 
 import src.commands.*;
-import src.interfaces.CollectionCustom;
-import src.interfaces.Command;
+import src.interfaces.*;
+import src.models.InputMedium;
 import src.models.Product;
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
-import src.models.Product;
+import src.service.InputService;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
-public class CommandManager {
+public class CommandManager implements CommandManagerCustom {
 
     private CollectionCustom<Product> collectionManager = null;
-
+    private InputService inputService;
+    private LinkedList<String> scriptFilesBeingExecuted;
     private HashMap<String, Command> commandsMap;
 
     private LinkedList<String> commandHistory;
-
     private MessageHandler messageHandler;
-    private HashSet<String> scriptsBeingExecuted;
 
     /**
      * Constructor for making a CommandManager
      * @param manager - collection with objects to manipulate
      * @param messageHandler - service for message handling
      */
-    public CommandManager(CollectionCustom<Product> manager, MessageHandler messageHandler) {
+    public CommandManager(CollectionCustom<Product> manager, MessageHandler messageHandler, InputService inputService) {
         this.messageHandler = messageHandler;
         this.collectionManager = manager;
-        scriptsBeingExecuted = new HashSet<>();
+        this.inputService = inputService;
+        this.scriptFilesBeingExecuted = new LinkedList<>();
         commandHistory = new LinkedList<>();
         commandsMap = new HashMap<>();
-        commandsMap.put("add", new AddCommand(collectionManager));
-        commandsMap.put("clear", new ClearCommand(collectionManager));
-        commandsMap.put("filter_greater_than_price", new FilterGreaterThanPriceCommand(collectionManager));
-        commandsMap.put("print_unique_unit_of_measure", new PrintUniqueUnitOfMeasureCommand(collectionManager));
-        commandsMap.put("remove_by_id", new RemoveByIdCommand(collectionManager));
-        commandsMap.put("remove", new RemoveCommand(collectionManager));
-        commandsMap.put("remove_first", new RemoveFirstCommand(collectionManager));
-        commandsMap.put("reorder", new ReorderCommand(collectionManager));
-        commandsMap.put("show", new ShowCommand(collectionManager));
-        commandsMap.put("update_by_id", new UpdateByIdCommand(collectionManager));
-        commandsMap.put("history", new HistoryCommand(collectionManager));
-        commandsMap.put("help", new HelpCommand(collectionManager));
-        commandsMap.put("info", new InfoCommand(collectionManager));
-        commandsMap.put("execute_script", new ExecuteScriptCommand(collectionManager));
-        commandsMap.put("filter_by_manufacture_cost", new FilterByManufactureCostCommand(collectionManager));
-        commandsMap.put("save", new SaveCommand(collectionManager));
-        commandsMap.put("exit", new ExitCommand(collectionManager));
+        commandsMap.put("add", new AddCommand(this));
+        commandsMap.put("clear", new ClearCommand(this));
+        commandsMap.put("filter_greater_than_price", new FilterGreaterThanPriceCommand(this));
+        commandsMap.put("print_unique_unit_of_measure", new PrintUniqueUnitOfMeasureCommand(this));
+        commandsMap.put("remove_by_id", new RemoveByIdCommand(this));
+        commandsMap.put("remove", new RemoveCommand(this));
+        commandsMap.put("remove_first", new RemoveFirstCommand(this));
+        commandsMap.put("reorder", new ReorderCommand(this));
+        commandsMap.put("show", new ShowCommand(this));
+        commandsMap.put("update_by_id", new UpdateByIdCommand(this));
+        commandsMap.put("history", new HistoryCommand(this));
+        commandsMap.put("help", new HelpCommand(this));
+        commandsMap.put("info", new InfoCommand(this));
+        commandsMap.put("execute_script", new ExecuteScriptCommand(this));
+        commandsMap.put("filter_by_manufacture_cost", new FilterByManufactureCostCommand(this));
+        commandsMap.put("save", new SaveCommand(this));
+        commandsMap.put("exit", new ExitCommand(this));
     }
+
 
     /**
      * executes the command in userInput
@@ -72,84 +69,33 @@ public class CommandManager {
         return true;
     }
 
-    private class ExecuteScriptCommand implements Command{
-        private CollectionCustom<Product> productCollection;
-        public ExecuteScriptCommand(CollectionCustom<Product> productCollection){
-            this.productCollection = productCollection;
-        }
-        @Override
-        public boolean execute(String[] args) {
-            try {
-                if(scriptsBeingExecuted.contains(args[0])){
-                    messageHandler.displayToUser("WARNING. Recursion is prevented.");
-                    return true;
-                }
-                else
-                    scriptsBeingExecuted.add(args[0]);
-                BufferedReader reader = new BufferedReader(new FileReader(args[0]));
-                String[] finalUserCommand;
-                String command;
-                while((command = reader.readLine()) != null) {
-                    executeCommand(command);
-                }
-                messageHandler.displayToUser("Commands ended.");
-                reader.close();
-            } catch (FileNotFoundException fileNotFoundException) {
-                messageHandler.log("File not found. Try again.");
-                return false;
-            } catch (IOException ioException) {
-                messageHandler.log("File reading exception. Try again.");
-                return false;
-            }
-            scriptsBeingExecuted.remove(args[0]);
-            return true;
-        }
-
-        @Override
-        public String getInfo() {
-            return "read and execute a script from specified file. You should enter path to file after entering a command.";
-        }
+    @Override
+    public List<String> getCommandHistory() {
+        return commandHistory;
     }
 
-    private class HelpCommand implements Command{
+    @Override
+    public List<String> getCommandsInfo() {
+        var commandInfos = new ArrayList<String>(commandsMap.size());
+        commandsMap.forEach((key, value) -> commandInfos.add(key + " - " + value.getInfo()));
+        return commandInfos;
 
-        private CollectionCustom<Product> productCollection;
-        public HelpCommand(CollectionCustom<Product> productCollection){
-            this.productCollection = productCollection;
-        }
-
-        @Override
-        public boolean execute(String[] args) {
-            commandsMap.forEach((key, value) -> System.out.println(key + " - " + value.getInfo()));
-            return true;
-        }
-
-        @Override
-        public String getInfo() {
-            return "print all elements in string representation to standard output";
-        }
     }
 
-    private class HistoryCommand implements Command{
-
-        private CollectionCustom<Product> productCollection;
-        public HistoryCommand(CollectionCustom<Product> productCollection){
-            this.productCollection = productCollection;
-        }
-
-        @Override
-        public boolean execute(String[] args) {
-            System.out.println("9 last used commands:");
-            for (var comm: commandHistory
-                 ) {
-                System.out.println(comm);
-            }
-            return true;
-        }
-
-        @Override
-        public String getInfo() {
-            return "output the last 9 used commands";
-        }
+    @Override
+    public InputService getInputService() {
+        return inputService;
     }
+
+    @Override
+    public CollectionCustom<Product> getCollectionManager() {
+        return collectionManager;
+    }
+
+    @Override
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
+
 }

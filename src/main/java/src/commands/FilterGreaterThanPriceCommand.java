@@ -2,18 +2,20 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
-public class FilterGreaterThanPriceCommand implements Command {
-    private CollectionCustom<Product> collectionCustom;
-    public FilterGreaterThanPriceCommand(CollectionCustom<Product> collectionCustom){
-        this.collectionCustom = collectionCustom;
+public class FilterGreaterThanPriceCommand extends CommandBase implements Command {
+    public FilterGreaterThanPriceCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
-        var products = collectionCustom.get();
+        var commandMessageHandler = commandManager.getMessageHandler();
+
+        var products = commandManager.getCollectionManager().get();
         try{
             var flag = false;
             var price = Float.parseFloat(args[0]);
@@ -24,11 +26,11 @@ public class FilterGreaterThanPriceCommand implements Command {
                 }
             }
             if(!flag)
-                System.out.println("no such elements found");
+                commandMessageHandler.displayToUser("no such elements found");
             return true;
         }
         catch (NumberFormatException | IndexOutOfBoundsException exception){
-            System.out.println("ID must be provided and it must be a number. Try typing this command again");
+            commandMessageHandler.displayToUser("ID must be provided and it must be a number. Try typing this command again");
             return false;
         }
     }

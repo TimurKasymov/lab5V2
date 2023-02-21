@@ -2,6 +2,7 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
@@ -10,17 +11,18 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
-public class InfoCommand implements Command {
-    private CollectionCustom<Product> collectionCustom;
-    public InfoCommand(CollectionCustom<Product> collectionCustom){
-        this.collectionCustom = collectionCustom;
+public class InfoCommand extends CommandBase implements Command {
+    public InfoCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
-        var time = collectionCustom.getInitializationTime().atZone(ZoneId.of("Europe/Moscow"));
-        var toPrint = String.format("type of colleciton: %s\ninitialization date: %s\nnumber of elements: %s", collectionCustom.getElementType().getName(),
-                time.format(DateTimeFormatter.ofPattern("dd/MM/YYYY HH:mm")), collectionCustom.get().size() );
+        var products = commandManager.getCollectionManager().get();
+        var collection = commandManager.getCollectionManager();
+        var time = collection.getInitializationTime().atZone(ZoneId.of("Europe/Moscow"));
+        var toPrint = String.format("type of colleciton: %s\ninitialization date: %s\nnumber of elements: %s", collection.getElementType().getName(),
+                time.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), products.size() );
         System.out.println(toPrint);
         return true;
     }

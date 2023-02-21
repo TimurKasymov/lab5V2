@@ -1,31 +1,27 @@
 package src.commands;
 
-import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
-import src.models.UnitOfMeasure;
-import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
-public class FilterByManufactureCostCommand implements Command {
-    private CollectionCustom<Product> collectionCustom;
-    public FilterByManufactureCostCommand(CollectionCustom<Product> collectionCustom){
-        this.collectionCustom = collectionCustom;
+public class FilterByManufactureCostCommand extends CommandBase implements Command {
+    public FilterByManufactureCostCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
+        var commandMessageHandler = commandManager.getMessageHandler();
         try {
             var manufactureCost = Double.valueOf(args[0]);
-            var products = collectionCustom.get();
+            var products = commandManager.getCollectionManager().get();
             for (Product product : products) {
                 if(product.getManufactureCost().doubleValue() == manufactureCost)
-                    System.out.println(product.toString() + "\n");
+                    commandMessageHandler.displayToUser(product.toString() + "\n");
             }
         }
-        catch (NumberFormatException exception){
-            System.out.printf("Manufacture cost must be from %s to %s. Try typing this command again", Double.MIN_VALUE, Double.MAX_VALUE);
+        catch (Exception exception){
+            commandMessageHandler.displayToUser(String.format("Manufacture cost must be from %s to %s. Try typing this command again", 0, Double.MAX_VALUE));
             return false;
         }
         return true;

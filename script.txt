@@ -1,0 +1,19 @@
+
+
+add
+nameForFirstProduct
+1
+1
+1
+1
+1
+2
+execute_script script1.txt
+add
+nameForThirdProduct
+3
+3
+3
+3
+3
+2

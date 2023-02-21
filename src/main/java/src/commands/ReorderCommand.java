@@ -2,22 +2,21 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
 import java.util.Collections;
 
-public class ReorderCommand implements Command {
+public class ReorderCommand extends CommandBase implements Command {
 
-    private CollectionCustom<Product> productCollection;
-
-    public ReorderCommand(CollectionCustom<Product> productCollection){
-        this.productCollection = productCollection;
+    public ReorderCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
-        Collections.reverse(productCollection.get());
+        Collections.reverse(commandManager.getCollectionManager().get());
         return true;
     }
 

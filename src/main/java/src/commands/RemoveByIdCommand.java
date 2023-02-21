@@ -2,39 +2,41 @@ package src.commands;
 
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
+import src.interfaces.CommandManagerCustom;
 import src.models.Product;
 import src.models.UnitOfMeasure;
 
-public class RemoveByIdCommand implements Command {
-    private CollectionCustom<Product> collectionCustom;
-    public RemoveByIdCommand(CollectionCustom<Product> collectionCustom){
-        this.collectionCustom = collectionCustom;
+public class RemoveByIdCommand extends CommandBase implements Command {
+    public RemoveByIdCommand(CommandManagerCustom commandManager){
+        super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
+        var commandMessageHandler = commandManager.getMessageHandler();
+
         try{
             long id = Long.parseLong(args[0]);
-            var products = collectionCustom.get();
+            var products = commandManager.getCollectionManager().get();
             if(id == 0){
-                System.out.println("ID must be an number greater than 0. Try typing this command again");
+                commandMessageHandler.displayToUser("ID must be an number greater than 0. Try typing this command again");
                 return false;
             }
             for (Product product : products) {
                 Long intId = product.getId();
                 if (intId == id) {
                     products.remove(product);
-                    System.out.println("Element was successfully removed.");
+                    commandMessageHandler.displayToUser("Element was successfully removed.");
                     return true;
                 }
             }
         }
         catch (NumberFormatException exception){
-            System.out.println("ID must be an number. Try typing this command again");
+            commandMessageHandler.displayToUser("ID must be an number. Try typing this command again");
             return false;
         }
 
-        System.out.println("Element with this ID is not defined. Try again.");
+        commandMessageHandler.displayToUser("Element with this ID is not defined. Try again.");
         return true;
     }
 
