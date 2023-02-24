@@ -8,3 +8,4 @@ nameForSecondProduct
 2
 2
 2
+execute_script script.txt

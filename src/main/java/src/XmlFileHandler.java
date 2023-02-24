@@ -18,7 +18,7 @@ import java.io.*;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-public class FileHandler implements Loadable {
+public class XmlFileHandler implements Loadable {
 
 
     /**
@@ -74,7 +74,7 @@ public class FileHandler implements Loadable {
             Collections.sort(products);
             System.out.println("loaded " + " products: " + products.size());
         } catch (Exception jaxbException) {
-            throw new FileLoadingException(jaxbException.getMessage());
+            products = new LinkedList<>();
         }
     }
 
@@ -82,10 +82,12 @@ public class FileHandler implements Loadable {
      * Method for saving (marshaling) java collection to XML-file and updating hash of file
      */
     @Override
-    public boolean save(LinkedList<Product> products, File file) throws Exception {
+    public boolean save(List<Product> products, File file) throws Exception {
         try {
-            if (products.size() == 0)
+            if (products.size() == 0){
+                new FileWriter(file, false).close();
                 return true;
+            }
             var fileWriter = new FileWriter(file);
             var productsXml = new Products();
             productsXml.setProducts(products);

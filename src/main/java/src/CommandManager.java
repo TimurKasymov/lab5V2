@@ -1,6 +1,7 @@
 package src;
 
 import src.commands.*;
+import src.container.CommandsContainer;
 import src.interfaces.*;
 import src.models.InputMedium;
 import src.models.Product;
@@ -8,10 +9,12 @@ import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
 import src.service.InputService;
 
+import java.io.File;
 import java.util.*;
 
 public class CommandManager implements CommandManagerCustom {
 
+    private UndoManager undoManager;
     private CollectionCustom<Product> collectionManager = null;
     private InputService inputService;
     private LinkedList<String> scriptFilesBeingExecuted;
@@ -37,7 +40,6 @@ public class CommandManager implements CommandManagerCustom {
         commandsMap.put("filter_greater_than_price", new FilterGreaterThanPriceCommand(this));
         commandsMap.put("print_unique_unit_of_measure", new PrintUniqueUnitOfMeasureCommand(this));
         commandsMap.put("remove_by_id", new RemoveByIdCommand(this));
-        commandsMap.put("remove", new RemoveCommand(this));
         commandsMap.put("remove_first", new RemoveFirstCommand(this));
         commandsMap.put("reorder", new ReorderCommand(this));
         commandsMap.put("show", new ShowCommand(this));
@@ -49,6 +51,16 @@ public class CommandManager implements CommandManagerCustom {
         commandsMap.put("filter_by_manufacture_cost", new FilterByManufactureCostCommand(this));
         commandsMap.put("save", new SaveCommand(this));
         commandsMap.put("exit", new ExitCommand(this));
+        commandsMap.put("undo_commands", new UndoCommand(this));
+        CommandsContainer.setCommands(commandsMap.keySet().stream().toList());
+        try{
+            this.undoManager = new UndoManager(new File("product_logging.xml"), new File("command_logging.txt"), messageHandler, collectionManager);
+        }
+        catch (Exception e){
+            messageHandler.displayToUser("fatal error, logging files can not be created or opened");
+            System.exit(0);
+        }
+
     }
 
 
@@ -79,13 +91,14 @@ public class CommandManager implements CommandManagerCustom {
         var commandInfos = new ArrayList<String>(commandsMap.size());
         commandsMap.forEach((key, value) -> commandInfos.add(key + " - " + value.getInfo()));
         return commandInfos;
-
     }
 
     @Override
     public InputService getInputService() {
         return inputService;
     }
+
+
 
     @Override
     public CollectionCustom<Product> getCollectionManager() {
@@ -95,6 +108,11 @@ public class CommandManager implements CommandManagerCustom {
     @Override
     public MessageHandler getMessageHandler() {
         return messageHandler;
+    }
+
+    @Override
+    public UndoManager getUndoManager() {
+        return undoManager;
     }
 
 

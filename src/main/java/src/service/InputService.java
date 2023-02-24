@@ -1,6 +1,9 @@
 package src.service;
 
 import src.MessageHandler;
+import src.container.CommandsContainer;
+import src.exceptions.CommandInterruptionException;
+import src.interfaces.CommandManagerCustom;
 import src.models.*;
 import src.models.Product;
 
@@ -24,25 +27,27 @@ public class InputService {
         this.scanner = scanner;
     }
 
-    public String inputName() throws NoSuchElementException {
+    public String inputName() throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser("Do not enter a very long name, some parts of it may get lost");
                 messageHandler.displayToUser("Enter a name: ");
                 String name = scanner.nextLine().trim();
+                if(CommandsContainer.contains(name))
+                    throw new CommandInterruptionException(name);
                 if (name.equals("")) {
                     messageHandler.displayToUser("This value cannot be empty. Try again");
                     continue;
                 }
                 return name;
             } catch (InputMismatchException inputMismatchException) {
-                messageHandler.displayToUser("This value must be string.");
+                messageHandler.displayToUser("This value must be non-empty string.");
                 scanner.next();
             }
         }
     }
 
-    public OrganizationType inputOrganizationType() throws NoSuchElementException {
+    public OrganizationType inputOrganizationType() throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser("Choose OrganizationType. Enter the number corresponding to the desired option. ");
@@ -56,10 +61,17 @@ public class InputService {
         }
     }
 
-    public Integer getInt() throws NoSuchElementException {
+    public Integer getInt() throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
-                return scanner.nextInt();
+                var str = scanner.nextLine();
+                if (str.equals("")) {
+                    messageHandler.displayToUser("This value cannot be empty. Try again");
+                    continue;
+                }
+                if(CommandsContainer.contains(str))
+                    throw new CommandInterruptionException(str);
+                return Integer.parseInt(str);
             } catch (InputMismatchException inputMismatchException) {
                 messageHandler.displayToUser("This value must be a number. Try again. ");
                 scanner.next();
@@ -69,7 +81,7 @@ public class InputService {
 
 
     /** method for combining X and Y inputs */
-    public Coordinates inputCoordinates() throws NoSuchElementException {
+    public Coordinates inputCoordinates() throws NoSuchElementException, CommandInterruptionException {
         messageHandler.displayToUser("adding coordinates..");
         var coor = new Coordinates(inputXLocation(), inputYLocation());
         messageHandler.displayToUser("done with coordinates..");
@@ -80,11 +92,21 @@ public class InputService {
      * Method for receiving x-coordinate of location of element
      * @return Double xLocation
      */
-    public Double inputXLocation() throws NoSuchElementException {
+    public Double inputXLocation() throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser("Enter X coordinate of location: ");
-                return scanner.nextDouble();
+                var str = scanner.nextLine();
+                if (str.equals("")) {
+                    messageHandler.displayToUser("This value cannot be empty. Try again");
+                    continue;
+                }
+                if(CommandsContainer.contains(str))
+                    throw new CommandInterruptionException(str);
+                var val = Double.parseDouble(str);
+                if(Double.isInfinite(val))
+                    throw new InputMismatchException();
+                return val;
             } catch (InputMismatchException inputMismatchException) {
                 messageHandler.displayToUser("This value must be a double-type number. Try again. ");
                 scanner.next();
@@ -96,11 +118,21 @@ public class InputService {
      * Method for receiving y-coordinate of element
      * @return float yLocation
      */
-    public float inputYLocation()  throws NoSuchElementException {
+    public float inputYLocation()  throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser("Enter Y coordinate of location: ");
-                return scanner.nextFloat();
+                var str = scanner.nextLine();
+                if (str.equals("")) {
+                    messageHandler.displayToUser("This value cannot be empty. Try again");
+                    continue;
+                }
+                if(CommandsContainer.contains(str))
+                    throw new CommandInterruptionException(str);
+                var val = Float.parseFloat(str);
+                if(Float.isInfinite(val))
+                    throw new InputMismatchException();
+                return val;
             } catch (InputMismatchException inputMismatchException) {
                 messageHandler.displayToUser("This value must be a float-type number. Try again. ");
                 scanner.next();
@@ -109,11 +141,20 @@ public class InputService {
     }
 
     /** method for taking price input */
-    public float inputPrice() throws NoSuchElementException {
+    public float inputPrice() throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser("Enter the price of the product: ");
-                var price = scanner.nextFloat();
+                var str = scanner.nextLine();
+                if (str.equals("")) {
+                    messageHandler.displayToUser("This value cannot be empty. Try again");
+                    continue;
+                }
+                if(CommandsContainer.contains(str))
+                    throw new CommandInterruptionException(str);
+                var price = Float.parseFloat(str);
+                if(Float.isInfinite(price))
+                    throw new InputMismatchException();
                 if(price < 0)
                     throw new InputMismatchException();
                 return price;
@@ -125,11 +166,20 @@ public class InputService {
     }
 
     /** method for taking price input */
-    public Double inputManufactureCost() throws NoSuchElementException {
+    public Double inputManufactureCost() throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser("Enter manufacture cost: ");
-                var inp = scanner.nextDouble();
+                var str = scanner.nextLine();
+                if (str.equals("")) {
+                    messageHandler.displayToUser("This value cannot be empty. Try again");
+                    continue;
+                }
+                if(CommandsContainer.contains(str))
+                    throw new CommandInterruptionException(str);
+                var inp = Double.parseDouble(str);
+                if(Double.isInfinite(inp))
+                    throw new InputMismatchException();
                 if(inp < 1)
                     throw new InputMismatchException();
                 return inp;
@@ -140,17 +190,24 @@ public class InputService {
         }
     }
 
-    public <T extends Enum<T>> void inputEnum(Class<T> enumClass) throws NoSuchElementException {
+    public <T extends Enum<T>> void inputEnum(Class<T> enumClass) throws NoSuchElementException, CommandInterruptionException {
         var enums = enumClass.getEnumConstants();
         for(int i = 1; i <= enums.length; i++)
             messageHandler.displayToUser(enums[i - 1] + " - " + i);
     }
 
-    public <T extends Enum<T>> Enum<T> readEnum(Class<T> enumClass) throws NoSuchElementException {
+    public <T extends Enum<T>> Enum<T> readEnum(Class<T> enumClass) throws NoSuchElementException, CommandInterruptionException {
         var enums = enumClass.getEnumConstants();
         while (true){
             try {
-                var index = scanner.nextInt();
+                var str = scanner.nextLine();
+                if (str.equals("")) {
+                    messageHandler.displayToUser("This value cannot be empty. Try again");
+                    continue;
+                }
+                if(CommandsContainer.contains(str))
+                    throw new CommandInterruptionException(str);
+                var index = Integer.parseInt(str);
                 if(1 > index || index > enums.length){
                     messageHandler.displayToUser(String.format("You should enter a number from %s to %s. Try again. ", 1, enums.length));
                     continue;
@@ -163,9 +220,7 @@ public class InputService {
         }
     }
 
-
-
-    public UnitOfMeasure inputUnitOfMeasure() throws NoSuchElementException {
+    public UnitOfMeasure inputUnitOfMeasure() throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser("Choose UnitOfMeasure. Enter the number corresponding to the desired option. ");
@@ -180,7 +235,7 @@ public class InputService {
         }
     }
 
-    public Organization inputOrganization(Collection<Product> products) throws NoSuchElementException {
+    public Organization inputOrganization(Collection<Product> products) throws NoSuchElementException, CommandInterruptionException {
         var maxId = Long.MIN_VALUE;
         for (var prod: products
         ) {
@@ -195,11 +250,18 @@ public class InputService {
         return org;
     }
 
-    public Integer inputAnnualTurnover()  throws NoSuchElementException {
+    public Integer inputAnnualTurnover()  throws NoSuchElementException, CommandInterruptionException {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser(String.format("Enter annual turnover. Note that value can only be from %s to %s: ", 1, Integer.MAX_VALUE));
-                var inp = scanner.nextInt();
+                var str = scanner.nextLine();
+                if (str.equals("")) {
+                    messageHandler.displayToUser("This value cannot be empty. Try again");
+                    continue;
+                }
+                if(CommandsContainer.contains(str))
+                    throw new CommandInterruptionException(str);
+                var inp = Integer.parseInt(str);
                 if(inp < 1)
                     throw new InputMismatchException();
                 return inp;

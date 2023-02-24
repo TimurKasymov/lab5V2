@@ -1,6 +1,7 @@
 package src.interfaces;
 
 import src.MessageHandler;
+import src.UndoManager;
 import src.models.InputMedium;
 import src.models.Product;
 import src.service.InputService;
@@ -21,4 +22,6 @@ public interface CommandManagerCustom {
     CollectionCustom<Product> getCollectionManager();
     /** gets message handler */
     MessageHandler getMessageHandler();
+    /** gets undoManager */
+    UndoManager getUndoManager();
 }

@@ -1,5 +1,6 @@
 package src.commands;
 
+import src.exceptions.CommandInterruptionException;
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
 import src.interfaces.CommandManagerCustom;
@@ -53,6 +54,7 @@ public class AddCommand extends CommandBase implements Command {
             }
             var prod = new Product(id, name, coord, price, manufCost,
                     unit, yesOrNo == 1 ? inputService.inputOrganization(products) : null);
+            commandManager.getUndoManager().logAddCommand(id);
             if (products.size() == 0) {
                 products.add(prod);
                 return true;
@@ -62,8 +64,13 @@ public class AddCommand extends CommandBase implements Command {
             else
                 products.addFirst(prod);
         }
+
         catch (NoSuchElementException exception){
             commandMessageHandler.displayToUser("adding product was canceled");
+        }
+        catch (CommandInterruptionException e){
+            commandMessageHandler.displayToUser("adding product was canceled by entered command");
+            commandManager.executeCommand(e.getEnteredCommand());
         }
 
         return true;

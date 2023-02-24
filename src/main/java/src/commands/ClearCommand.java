@@ -14,7 +14,13 @@ public class ClearCommand extends CommandBase implements Command {
 
     @Override
     public boolean execute(String[] args) {
-        commandManager.getCollectionManager().get().clear();
+        var prods = commandManager.getCollectionManager().get();
+        var numbOFLoops = prods.size();
+        commandManager.getUndoManager().startOrEndTransaction();
+        for (int i = 0; i < numbOFLoops; i++){
+            commandManager.executeCommand("remove_by_id " + prods.get(0).getId());
+        }
+        commandManager.getUndoManager().startOrEndTransaction();
         return true;
     }
 

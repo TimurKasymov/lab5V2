@@ -1,2 +1,7 @@
-package src.service;public enum wayOfOrder {
+package src.service;
+
+public enum WayOfOrder {
+    ASCENDING,
+    DESCENDING,
+    NON
 }

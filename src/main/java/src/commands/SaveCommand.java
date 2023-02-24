@@ -16,6 +16,7 @@ public class SaveCommand extends CommandBase implements Command {
     @Override
     public boolean execute(String[] args) {
         commandManager.getCollectionManager().save();
+        commandManager.getUndoManager().saveLoggingFiles();
         return true;
     }
 

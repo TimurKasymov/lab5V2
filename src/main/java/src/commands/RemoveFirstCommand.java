@@ -1,22 +1,23 @@
 package src.commands;
 
-import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
 import src.interfaces.CommandManagerCustom;
-import src.models.Product;
-import src.models.UnitOfMeasure;
-
-import java.util.LinkedList;
 
 public class RemoveFirstCommand extends CommandBase implements Command {
 
-    public RemoveFirstCommand(CommandManagerCustom commandManager){
+    public RemoveFirstCommand(CommandManagerCustom commandManager) {
         super(commandManager);
     }
 
     @Override
     public boolean execute(String[] args) {
-        ((LinkedList<Product>)(commandManager.getCollectionManager().get())).removeFirst();
+        if (commandManager.getCollectionManager().get().size() == 0) {
+            commandManager.getMessageHandler().displayToUser("collection is empty");
+            return true;
+        }
+        var removeCommand = "remove_by_id 1";
+        commandManager.executeCommand(removeCommand);
+
         return true;
     }
 

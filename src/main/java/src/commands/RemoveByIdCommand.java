@@ -1,14 +1,12 @@
 package src.commands;
 
-import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
 import src.interfaces.CommandManagerCustom;
 import src.models.Product;
-import src.models.UnitOfMeasure;
 
-public class RemoveCommand extends CommandBase implements Command {
+public class RemoveByIdCommand extends CommandBase implements Command {
 
-    public RemoveCommand(CommandManagerCustom commandManager){
+    public RemoveByIdCommand(CommandManagerCustom commandManager){
         super(commandManager);
     }
     @Override

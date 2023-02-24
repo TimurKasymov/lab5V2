@@ -12,16 +12,11 @@ public class Products {
     @XmlElement(name = "product")
     private List<Product> products = null;
 
-    /**
-     * Method for get persons list
-     * @return List<Product> products
-     */
     public LinkedList<Product> getProducts() {
         return new LinkedList<Product>(products);
     }
 
-    /** Method for passing a value to the persons list */
-    public void setProducts(LinkedList<Product> persons) {
+    public void setProducts(List<Product> persons) {
         this.products = persons;
     }
 
