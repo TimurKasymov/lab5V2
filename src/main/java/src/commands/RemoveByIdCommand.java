@@ -1,47 +1,40 @@
 package src.commands;
 
-import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
 import src.interfaces.CommandManagerCustom;
 import src.models.Product;
-import src.models.UnitOfMeasure;
 
 public class RemoveByIdCommand extends CommandBase implements Command {
+
     public RemoveByIdCommand(CommandManagerCustom commandManager){
         super(commandManager);
     }
-
     @Override
     public boolean execute(String[] args) {
         var commandMessageHandler = commandManager.getMessageHandler();
 
-        try{
-            long id = Long.parseLong(args[0]);
-            var products = commandManager.getCollectionManager().get();
-            if(id == 0){
-                commandMessageHandler.displayToUser("ID must be an number greater than 0. Try typing this command again");
-                return false;
+        try {
+            var id = Long.parseLong(args[0]);
+            var prods = commandManager.getCollectionManager().get();
+            if(prods.stream().map(Product::getId).toList().contains(id)) {
+                var prodWithId = prods.stream().filter(p-> p.getId() == id).findFirst();
+                if(prodWithId.isEmpty())
+                    throw new NumberFormatException();
+                commandManager.getUndoManager().logRemoveCommand(prodWithId.get());
+                prods.remove(prodWithId.get());
+                return true;
             }
-            for (Product product : products) {
-                Long intId = product.getId();
-                if (intId == id) {
-                    products.remove(product);
-                    commandMessageHandler.displayToUser("Element was successfully removed.");
-                    return true;
-                }
-            }
+            commandMessageHandler.displayToUser("Element with this id doesnt exist");
+            return false;
         }
         catch (NumberFormatException exception){
             commandMessageHandler.displayToUser("ID must be an number. Try typing this command again");
-            return false;
+                return false;
         }
-
-        commandMessageHandler.displayToUser("Element with this ID is not defined. Try again.");
-        return true;
     }
 
     @Override
     public String getInfo() {
-        return "You should enter ID after entering a command.";
+        return "remove an element from the collection by its ID.";
     }
 }

@@ -2,13 +2,16 @@ package src;
 
 import src.service.InputService;
 
-import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException {
+    /**
+     * my <a href="https://github.com/TimurKasymov/lab5V2">repo</a>
+     * @param args program arguments
+     */
+    public static void main(String[] args) {
         var mesHandler = new MessageHandler();
-        var collection = new CollectionManager(new FileHandler(), mesHandler);
+        var collection = new CollectionManager(new XmlFileHandler(), mesHandler);
         var inputService = new InputService(mesHandler);
         var commandManager = new CommandManager(collection, mesHandler, inputService);
         while (true){

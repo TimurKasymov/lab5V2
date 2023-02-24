@@ -17,7 +17,10 @@ public class MessageHandler {
         logs.add(message);
     }
 
-    /** gets the logs collection */
+    /**
+     *  gets the logs collection
+     * @return list of logs
+     */
     public List<String> getLogs(){
         return logs;
     }
