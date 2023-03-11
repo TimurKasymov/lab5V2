@@ -42,7 +42,6 @@ public class InputService {
                 return name;
             } catch (InputMismatchException inputMismatchException) {
                 messageHandler.displayToUser("This value must be non-empty string.");
-                scanner.next();
             }
         }
     }
@@ -72,9 +71,8 @@ public class InputService {
                 if(CommandsContainer.contains(str))
                     throw new CommandInterruptionException(str);
                 return Integer.parseInt(str);
-            } catch (InputMismatchException inputMismatchException) {
+            } catch (InputMismatchException | NumberFormatException inputMismatchException) {
                 messageHandler.displayToUser("This value must be a number. Try again. ");
-                scanner.next();
             }
         }
     }
@@ -107,9 +105,8 @@ public class InputService {
                 if(Double.isInfinite(val))
                     throw new InputMismatchException();
                 return val;
-            } catch (InputMismatchException inputMismatchException) {
+            } catch (InputMismatchException | NumberFormatException inputMismatchException) {
                 messageHandler.displayToUser("This value must be a double-type number. Try again. ");
-                scanner.next();
             }
         }
     }
@@ -132,10 +129,13 @@ public class InputService {
                 var val = Float.parseFloat(str);
                 if(Float.isInfinite(val))
                     throw new InputMismatchException();
+                if(val <= -264){
+                    messageHandler.displayToUser("This value must greater than -264. Try again. ");
+                    continue;
+                }
                 return val;
-            } catch (InputMismatchException inputMismatchException) {
+            } catch (InputMismatchException | NumberFormatException  inputMismatchException) {
                 messageHandler.displayToUser("This value must be a float-type number. Try again. ");
-                scanner.next();
             }
         }
     }
@@ -158,9 +158,8 @@ public class InputService {
                 if(price < 0)
                     throw new InputMismatchException();
                 return price;
-            } catch (InputMismatchException inputMismatchException) {
+            } catch (InputMismatchException | NumberFormatException  inputMismatchException) {
                 messageHandler.displayToUser("This value must be a float-type positive number. Try again. ");
-                scanner.next();
             }
         }
     }
@@ -170,7 +169,7 @@ public class InputService {
         for ( ; ; ) {
             try {
                 messageHandler.displayToUser("Enter manufacture cost: ");
-                var str = scanner.nextLine();
+                var str = scanner.nextLine().trim();
                 if (str.equals("")) {
                     messageHandler.displayToUser("This value cannot be empty. Try again");
                     continue;
@@ -183,9 +182,8 @@ public class InputService {
                 if(inp < 1)
                     throw new InputMismatchException();
                 return inp;
-            } catch (InputMismatchException inputMismatchException) {
+            } catch (InputMismatchException | NumberFormatException  inputMismatchException) {
                 messageHandler.displayToUser("This value must be a Double-type number. Try again. ");
-                scanner.next();
             }
         }
     }
@@ -213,7 +211,7 @@ public class InputService {
                     continue;
                 }
                 return enums[index - 1];
-            } catch (InputMismatchException inputMismatchException) {
+            } catch (InputMismatchException | NumberFormatException inputMismatchException) {
                 scanner.next();
             }
 
@@ -265,9 +263,8 @@ public class InputService {
                 if(inp < 1)
                     throw new InputMismatchException();
                 return inp;
-            } catch (InputMismatchException inputMismatchException) {
+            } catch (InputMismatchException | NumberFormatException inputMismatchException) {
                 messageHandler.displayToUser("This value must be a double-type number. Try again. ");
-                scanner.next();
             }
         }
     }

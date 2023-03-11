@@ -2,6 +2,7 @@ package src.commands;
 
 import src.container.CommandsContainer;
 import src.exceptions.CommandInterruptionException;
+import src.exceptions.InterruptionCause;
 import src.interfaces.Command;
 import src.interfaces.CommandManagerCustom;
 
@@ -9,7 +10,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.InputMismatchException;
 import java.util.LinkedList;
-import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class ExecuteScriptCommand extends CommandBase implements Command {
@@ -81,8 +81,12 @@ public class ExecuteScriptCommand extends CommandBase implements Command {
             commandMessageHandler.log("File not found. Try again.");
             return false;
         } catch (CommandInterruptionException e) {
-            commandMessageHandler.displayToUser("script execution was canceled by entered command");
-            commandManager.executeCommand(e.getEnteredCommand());
+            if (e.getInterruptionCause() == InterruptionCause.EXIT)
+                commandMessageHandler.displayToUser("adding product was successfully canceled");
+            else {
+                commandMessageHandler.displayToUser("adding product was canceled by entered command");
+                commandManager.executeCommand(e.getEnteredCommand());
+            }
         }
         return true;
     }

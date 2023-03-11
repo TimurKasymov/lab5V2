@@ -1,10 +1,7 @@
 package src.commands;
 
-import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
 import src.interfaces.CommandManagerCustom;
-import src.models.Product;
-import src.models.UnitOfMeasure;
 
 public class ClearCommand extends CommandBase implements Command {
 
@@ -21,6 +18,7 @@ public class ClearCommand extends CommandBase implements Command {
             commandManager.executeCommand("remove_by_id " + prods.get(0).getId());
         }
         commandManager.getUndoManager().startOrEndTransaction();
+        commandManager.getMessageHandler().displayToUser("collection cleared successfully");
         return true;
     }
 

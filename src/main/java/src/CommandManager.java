@@ -3,7 +3,6 @@ package src;
 import src.commands.*;
 import src.container.CommandsContainer;
 import src.interfaces.*;
-import src.models.InputMedium;
 import src.models.Product;
 import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
@@ -16,12 +15,11 @@ public class CommandManager implements CommandManagerCustom {
 
     private UndoManager undoManager;
     private CollectionCustom<Product> collectionManager = null;
-    private InputService inputService;
-    private LinkedList<String> scriptFilesBeingExecuted;
-    private HashMap<String, Command> commandsMap;
+    private final InputService inputService;
+    private final HashMap<String, Command> commandsMap;
 
-    private LinkedList<String> commandHistory;
-    private MessageHandler messageHandler;
+    private final LinkedList<String> commandHistory;
+    private final MessageHandler messageHandler;
 
     /**
      * Constructor for making a CommandManager
@@ -32,7 +30,6 @@ public class CommandManager implements CommandManagerCustom {
         this.messageHandler = messageHandler;
         this.collectionManager = manager;
         this.inputService = inputService;
-        this.scriptFilesBeingExecuted = new LinkedList<>();
         commandHistory = new LinkedList<>();
         commandsMap = new HashMap<>();
         commandsMap.put("add", new AddCommand(this));
@@ -75,8 +72,9 @@ public class CommandManager implements CommandManagerCustom {
             messageHandler.displayToUser("Unknown command. Write help for help.");
             return false;
         }
-        var command = commandsMap.get(commandUnits[0]);
-        commandHistory.add(commandUnits[0]);
+        var enteredCommand = commandUnits[0].trim().toLowerCase();
+        var command = commandsMap.get(enteredCommand);
+        commandHistory.add(enteredCommand);
         command.execute(Arrays.copyOfRange(commandUnits, 1, commandUnits.length));
         return true;
     }

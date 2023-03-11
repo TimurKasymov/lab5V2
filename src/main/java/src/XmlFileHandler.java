@@ -88,7 +88,7 @@ public class XmlFileHandler implements Loadable {
                 new FileWriter(file, false).close();
                 return true;
             }
-            var fileWriter = new FileWriter(file);
+            var fileWriter = new PrintWriter(file);
             var productsXml = new Products();
             productsXml.setProducts(products);
             JAXBContext jaxbContext = JAXBContext.newInstance(Products.class);

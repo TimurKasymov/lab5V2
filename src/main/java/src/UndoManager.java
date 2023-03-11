@@ -138,7 +138,7 @@ public class UndoManager {
             return;
         }
         var transaction_delimiter_encountered = false;
-        while (numberOfCommandsToUndo > 0) {
+        while (numberOfCommandsToUndo > 0 && !commandsLogs.isEmpty()) {
             var topCommand = commandsLogs.pop();
             if (topCommand.equals(transaction_delimiter)) {
                 transaction_delimiter_encountered = !transaction_delimiter_encountered;
@@ -185,7 +185,8 @@ public class UndoManager {
             if (foundReal.isEmpty())
                 throw new Exception();
             var indexOfFoundInReal = realProductCollection
-                    .get().indexOf(foundReal.get());
+                    .get()
+                    .indexOf(foundReal.get());
             realProductCollection.get().remove(foundReal.get());
             realProductCollection.get().add(indexOfFoundInReal, foundInLogs);
 

@@ -22,6 +22,7 @@ public class RemoveByIdCommand extends CommandBase implements Command {
                     throw new NumberFormatException();
                 commandManager.getUndoManager().logRemoveCommand(prodWithId.get());
                 prods.remove(prodWithId.get());
+                commandManager.getMessageHandler().displayToUser(String.format("product with id: %s was successfully removed", prodWithId.get().getId()));
                 return true;
             }
             commandMessageHandler.displayToUser("Element with this id doesnt exist");

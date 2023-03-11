@@ -17,7 +17,7 @@ public class RemoveFirstCommand extends CommandBase implements Command {
         }
         var removeCommand = "remove_by_id 1";
         commandManager.executeCommand(removeCommand);
-
+        commandManager.getMessageHandler().displayToUser("first product successfully removed");
         return true;
     }
 

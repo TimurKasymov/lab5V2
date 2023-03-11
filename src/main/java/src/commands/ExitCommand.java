@@ -1,10 +1,7 @@
 package src.commands;
 
-import src.interfaces.CollectionCustom;
 import src.interfaces.Command;
 import src.interfaces.CommandManagerCustom;
-import src.models.Product;
-import src.models.UnitOfMeasure;
 
 import java.util.concurrent.TimeUnit;
 

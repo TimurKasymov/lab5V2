@@ -9,6 +9,6 @@ public class CommandsContainer {
     }
 
     public static boolean contains(String supposedlyCommand){
-        return commandNames.contains(supposedlyCommand);
+        return commandNames.contains(supposedlyCommand.trim().toLowerCase());
     }
 }

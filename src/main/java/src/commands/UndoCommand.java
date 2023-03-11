@@ -15,6 +15,7 @@ public class UndoCommand extends CommandBase implements Command {
     public boolean execute(String[] args) {
         var numberOfCommands = Integer.parseInt(args[0]);
         commandManager.getUndoManager().undoCommands(numberOfCommands);
+        commandManager.getMessageHandler().displayToUser("commands were successfully canceled");
         return true;
     }
 

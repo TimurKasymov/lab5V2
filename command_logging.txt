@@ -1,0 +1,8 @@
+remove 7
+I_am_transaction_delimiter
+remove 8
+remove 9
+remove 10
+remove 11
+remove 12
+I_am_transaction_delimiter

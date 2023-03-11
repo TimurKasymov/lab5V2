@@ -1,15 +1,14 @@
 package src.commands;
 
 import src.exceptions.CommandInterruptionException;
-import src.interfaces.CollectionCustom;
+import src.exceptions.InterruptionCause;
 import src.interfaces.Command;
 import src.interfaces.CommandManagerCustom;
-import src.models.InputMedium;
 import src.models.Product;
-import src.service.InputService;
 
-import java.io.File;
 import java.util.*;
+
+import static com.sun.java.accessibility.util.AWTEventMonitor.addKeyListener;
 
 
 public class AddCommand extends CommandBase implements Command {
@@ -55,22 +54,29 @@ public class AddCommand extends CommandBase implements Command {
             var prod = new Product(id, name, coord, price, manufCost,
                     unit, yesOrNo == 1 ? inputService.inputOrganization(products) : null);
             commandManager.getUndoManager().logAddCommand(id);
+            commandManager.getMessageHandler().displayToUser("product successfully added");
             if (products.size() == 0) {
                 products.add(prod);
+
                 return true;
             }
             if (products.peekLast().getId() == maxId)
                 products.add(prod);
             else
                 products.addFirst(prod);
+
         }
 
         catch (NoSuchElementException exception){
             commandMessageHandler.displayToUser("adding product was canceled");
         }
         catch (CommandInterruptionException e){
-            commandMessageHandler.displayToUser("adding product was canceled by entered command");
-            commandManager.executeCommand(e.getEnteredCommand());
+            if(e.getInterruptionCause() == InterruptionCause.EXIT)
+                commandMessageHandler.displayToUser("adding product was successfully canceled");
+            else{
+                commandMessageHandler.displayToUser("adding product was canceled by entered command");
+                commandManager.executeCommand(e.getEnteredCommand());
+            }
         }
 
         return true;

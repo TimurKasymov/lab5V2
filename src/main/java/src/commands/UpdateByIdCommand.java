@@ -67,7 +67,7 @@ public class UpdateByIdCommand extends CommandBase implements Command {
                     commandManager.getUndoManager().logUpdateCommand(product);
                     products.remove(product);
                     products.add(idInCollection, prod);
-                    commandMessageHandler.displayToUser("Element was updated");
+                    commandMessageHandler.displayToUser("Element was updated successfully");
                     return true;
                 }
             }

@@ -20,7 +20,6 @@ public class CollectionManager implements CollectionCustom<Product> {
     private final Loadable fileManager;
     private LocalDateTime initializationTime;
     private final MessageHandler messageHandler;
-    private UndoManager undoManager = null;
 
     public CollectionManager(Loadable fileManager, MessageHandler messageHandler) {
         this.fileManager = fileManager;
@@ -36,6 +35,11 @@ public class CollectionManager implements CollectionCustom<Product> {
                     messageHandler.displayToUser("Enter a full path to XML file with collection or of the file where collection elements are " +
                             "going to be stored to while being saved: ");
                     pathToFile = scanner.nextLine();
+                    var extension = pathToFile.split("\\.")[1];
+                    if(!extension.equals("xml")){
+                        messageHandler.displayToUser("the extension of the file must be .xml, try again");
+                        continue;
+                    }
                 }
                 xmlfile = new File(pathToFile);
                 fileManager.load(xmlfile);
@@ -52,11 +56,15 @@ public class CollectionManager implements CollectionCustom<Product> {
                     products.sort((p, p1) -> (int) (p1.getId() - p.getId()));
                 initializationTime = LocalDateTime.now(ZoneId.of("Europe/Moscow"));
                 return;
-            } catch (NoAccessToFileException exception) {
+            }
+            catch (IndexOutOfBoundsException exception){
+                messageHandler.displayToUser("the extension of the file must be .xml, try again");
+            }
+            catch (NoAccessToFileException exception) {
                 messageHandler.displayToUser("You dont have access to the specified file. Try again.");
             }
             catch (Exception e){
-                messageHandler.log("You dont have access to the specified file. Try again.");
+                messageHandler.log("Something went wrong try again :)");
             }
         }
 
@@ -82,8 +90,9 @@ public class CollectionManager implements CollectionCustom<Product> {
                 }
             }
             if (prod.getPrice() < 1 || prod.getCreationDate() == null || prod.getCoordinates() == null ||
-                    prod.getName() == null || prod.getManufactureCost() == null || prod.getCoordinates().getX() == null)
-                return false;
+                    prod.getName() == null || prod.getManufactureCost() == null || prod.getCoordinates().getX() == null
+                    || prod.getCoordinates().getY() <= -264)
+            {return false;}
 
             productIds.add(prod.getId());
         }
@@ -100,11 +109,8 @@ public class CollectionManager implements CollectionCustom<Product> {
             return m;
         });
 
-        if (ids.length < products.size() || minId < 1
-                || minOrganizationId < 1 || organizationIds.stream().count() < organizationIds.size()) {
-            return false;
-        }
-        return true;
+        return ids.length >= products.size() && minId >= 1
+                && minOrganizationId >= 1 && (long) organizationIds.size() >= organizationIds.size();
 
     }
 

@@ -17,6 +17,7 @@ public class ReorderCommand extends CommandBase implements Command {
         commandManager
                 .getUndoManager()
                 .logReorderCommand();
+        commandManager.getMessageHandler().displayToUser("collection was reordered successfully");
         return true;
     }
 
